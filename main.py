@@ -1,12 +1,4 @@
-#!/usr/bin/env python
-# pylint: disable=C0116,W0613
-# This program is dedicated to the public domain under the CC0 license.
 
-"""
-Basic example for a bot that works with polls. Only 3 people are allowed to interact with each
-poll/quiz the bot generates. The preview command generates a closed poll/quiz, exactly like the
-one the user sends the bot
-"""
 import logging
 
 from telegram import (
@@ -76,20 +68,16 @@ keyboards_medicine = [[[
 
 
 def start(update: Update, context: CallbackContext) -> None:
-    """Inform user about what this bot can do"""
     buttons = [[(KeyboardButton("Опитування по Інформатиці"))], [(KeyboardButton("Опитування по Медецині"))]]
     reply_markup = ReplyKeyboardMarkup(buttons)
     update.effective_chat.send_message(text=str("Оберіть опитування. "), reply_markup=reply_markup)
 
 
 def button(update: Update, context: CallbackContext) -> None:
-    """Parses the CallbackQuery and updates the message text."""
     global total_count
     global current_question
     query = update.callback_query
 
-    # CallbackQueries need to be answered, even if no notification to the user is needed
-    # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
     query.answer()
     query.message.edit_reply_markup()
 
@@ -131,19 +119,14 @@ def messageAnswerCustomHandler(update: Update, context: CallbackContext) -> None
 
 
 def main() -> None:
-    """Run bot."""
-    # Create the Updater and pass it your bot's token.
     updater = Updater("5409047172:AAGci2HmXRlheqwJ6wztPG9PEyUso9sbKD4")
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(MessageHandler(Filters.text, messageAnswerCustomHandler))
     dispatcher.add_handler(CallbackQueryHandler(button))
 
-    # Start the Bot
     updater.start_polling()
 
-    # Run the bot until the user presses Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT
     updater.idle()
 
 
